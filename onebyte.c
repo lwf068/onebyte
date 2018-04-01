@@ -6,6 +6,7 @@
 #include <linux/types.h>
 #include <linux/fs.h>
 #include <linux/proc_fs.h>
+#include <linux/uaccess.h>
 #include <asm/uaccess.h>
 #define MAJOR_NUMBER 61
 
@@ -51,7 +52,13 @@ ssize_t onebyte_read(struct file *filep, char *buf, size_t count, loff_t *f_pos)
 
 ssize_t onebyte_write(struct file *filep, const char *buf, size_t count, loff_t *f_pos)
 {
-    /*please complete the function on your own*/
+    copy_from_user(onebyte_data,buf,1);
+    if (count >1)
+    {
+        printk(KERN_INFO "Write error: no space on device for: %s\n",buf);
+        return -ENOSPC;
+    }
+    return count;
 }
 
 static int onebyte_init(void)
